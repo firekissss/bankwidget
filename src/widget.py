@@ -1,7 +1,8 @@
 import re
-from _datetime import datetime
 
-import masks
+from datetime import datetime
+
+from src import masks
 
 
 def mask_account_card(card_info: str) -> str:
@@ -25,4 +26,4 @@ def get_date(input_date_string: str) -> str:
         date_parsed = datetime.fromisoformat(input_date_string)
     except ValueError:
         raise ValueError("Некорректная дата/время")
-    return date_parsed.strftime("%d.%m.%y")
+    return date_parsed.strftime("%d.%m.%Y")
