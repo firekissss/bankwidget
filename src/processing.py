@@ -2,6 +2,7 @@ from datetime import datetime
 
 
 def filter_by_state(dictionary_input_list: list[dict], state: str = "EXECUTED") -> list[dict]:
+    """filters the list of dictionaries by the 'state' parameter, EXECUTED by default"""
     output_dictionary_list: list = []
     for item in dictionary_input_list:
         if item["state"] == state:

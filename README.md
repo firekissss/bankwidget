@@ -34,6 +34,32 @@ gh repo clone firekissss/bankwidget
 ```
 Do not launch it in any possible way! There's nothing to launch yet!
 
+There are some properly-working modules with functions:
+- masks.py
+  + get_mask_card_number (returns masked card number in XXXX XX** **** XXXX format)
+  + get_mask_account (returns masked bank account number in **XXXX format)
+- widget.py
+  + mask_account_card (returns masked account or card number, uses both of previous functions)
+  + get_date (extracts date in DD.MM.YYYY format from ISO datetime string)
+- processing.py
+  + filter_by_state (filters the list of dictionaries by the 'state' parameter, EXECUTED by default)
+  + sort_by_date (sorts an input dictionary list by key 'date' and value in ISO format
+    in descending (default) or ascending order)
+
+You can launch these functions by adding `print` command in module you need and give some input data as parameters.
+
+
+### For example
+Add this at the end of processing.py:
+```python
+print(sort_by_date([{'id': 41428829, 'state': 'EXECUTED', 'date': '2019-07-03T18:35:29.512364'},
+                    {'id': 939719570, 'state': 'EXECUTED', 'date': '2018-06-30T02:08:58.425572'},
+                    {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
+                    {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}],
+                   order='ascending'))
+```
+and run processing.py file. It will show you the result of the function.
+
 ## Development
 In progress...
 
