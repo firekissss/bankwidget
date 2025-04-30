@@ -1,5 +1,4 @@
 import re
-
 from datetime import datetime
 
 from src import masks
@@ -7,7 +6,7 @@ from src import masks
 
 def mask_account_card(card_info: str) -> str:
     """returns masked account or card number"""
-    first_digit_match = re.search(r'\d', card_info)
+    first_digit_match = re.search(r"\d", card_info)
     if not first_digit_match:
         raise ValueError("Не найдены цифры в строке")
     first_digit_index = first_digit_match.start()
@@ -19,7 +18,7 @@ def mask_account_card(card_info: str) -> str:
 
 def get_date(input_date_string: str) -> str:
     """extracts date in DD.MM.YYYY format from ISO datetime string"""
-    pattern = r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+$'
+    pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+$"
     if not re.fullmatch(pattern, input_date_string):
         raise ValueError("Некорректный формат")
     try:
