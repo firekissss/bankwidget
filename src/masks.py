@@ -11,4 +11,7 @@ def get_mask_account(input_account_number: str) -> str:
     """returns masked bank account number in **XXXX format"""
     if not input_account_number.isdigit():
         raise ValueError("Номер счёта должен состоять только из цифр")
+    # минимальная длина счёта - у формата счёта USA - 4 цифры без учёта Routing number (ABA)
+    if len(input_account_number)<4:
+        raise ValueError("Номер счёта слишком короткий")
     return "**" + input_account_number[-4:]
