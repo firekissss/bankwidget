@@ -28,10 +28,28 @@ def filter_by_state(dictionary_input_list: list[dict], state: str = "EXECUTED") 
 def sort_by_date(dictionary_input_list: list[dict], is_reversed: bool = True) -> list[dict]:
     """sorts an input dictionary list by key 'date' and value in ISO format
     in descending (default, True) or ascending (False) order"""
+    if not isinstance(is_reversed, bool):
+        raise ValueError(f"Параметр is_reversed должен быть типа bool, получено: {type(is_reversed).__name__}")
+
+    invalid_items = []
+    for item in dictionary_input_list:
+        date_str = item.get("date")
+        if not isinstance(date_str, str):
+            invalid_items.append(item)
+            continue
+        try:
+            datetime.fromisoformat(date_str)
+        except ValueError:
+            invalid_items.append(item)
+    if invalid_items:
+        raise ValueError(
+            f"Операции {', '.join(str(item.get('id', 'no_id_operation')) for item in invalid_items)} содержат некорректный формат даты"
+        )
+
     return sorted(
         dictionary_input_list,
         key=lambda x: datetime.fromisoformat(x["date"]),
-        reverse=is_reversed,
+        reverse=is_reversed
     )
     # Не использую функцию get_date из модуля widget, т.к. она возвращает только дату
     # в таком случае, операции за один и тот же день могут неверно сортироваться из-за неучёта времени
