@@ -1,11 +1,10 @@
 import pytest
 
-from src.masks import *
-
+from src.masks import get_mask_account, get_mask_card_number
 
 # testing get_mask_card_number
 
-def test_get_mask_card_number_correct(correct_card_number):
+def test_get_mask_card_number_correct(correct_card_number: str) -> None:
     assert get_mask_card_number(correct_card_number) == "1234 56** **** 1121"
 
 
@@ -19,7 +18,7 @@ def test_get_mask_card_number_correct(correct_card_number):
     ("123456789012345", "Номер карты должен содержать 16 цифр"),
     ("1234", "Номер карты должен содержать 16 цифр")
 ])
-def test_get_mask_card_number_any_invalid_input(invalid_value, wanted_exc_info):
+def test_get_mask_card_number_any_invalid_input(invalid_value: str, wanted_exc_info: str) -> None:
     with pytest.raises(ValueError) as result_exc_info:
         get_mask_card_number(invalid_value)
 
@@ -32,7 +31,7 @@ def test_get_mask_card_number_any_invalid_input(invalid_value, wanted_exc_info):
     ("123456", "**3456"),
     ("12345678901234567890", "**7890")
 ])
-def test_get_mask_account_correct_number(account_number, masked_number):
+def test_get_mask_account_correct_number(account_number: str, masked_number: str) -> None:
     assert get_mask_account(account_number) == masked_number
 
 
@@ -47,7 +46,7 @@ def test_get_mask_account_correct_number(account_number, masked_number):
     ("12", "Номер счёта слишком короткий"),
     ("1", "Номер счёта слишком короткий")
 ])
-def test_get_mask_account_any_invalid_input(invalid_account_number, wanted_exc_info):
+def test_get_mask_account_any_invalid_input(invalid_account_number: str, wanted_exc_info: str) -> None:
     with pytest.raises(ValueError) as result_exc_info:
         get_mask_account(invalid_account_number)
 

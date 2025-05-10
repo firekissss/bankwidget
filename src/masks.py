@@ -1,6 +1,7 @@
 from src.config import MAX_ACC_NUMBER_LENGTH, MIN_ACC_NUMBER_LENGTH
 
-def is_in_allowed_acc_number_range(account_number):
+
+def is_in_allowed_acc_number_range(account_number: str) -> bool:
     return True if MIN_ACC_NUMBER_LENGTH <= len(account_number) <= MAX_ACC_NUMBER_LENGTH else False
 
 
@@ -18,6 +19,6 @@ def get_mask_account(input_account_number: str) -> str:
     if not input_account_number.isdigit():
         raise ValueError("Номер счёта должен состоять только из цифр")
     # минимальная длина счёта - у формата счёта USA - 4 цифры без учёта Routing number (ABA)
-    if not is_in_allowed_acc_number_range(input_account_number) :
+    if not is_in_allowed_acc_number_range(input_account_number):
         raise ValueError("Номер счёта слишком короткий")
     return "**" + input_account_number[-4:]

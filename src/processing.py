@@ -19,7 +19,8 @@ def filter_by_state(dictionary_input_list: list[dict], state: str = "EXECUTED") 
             output_dictionary_list.append(item)
     if stop_adding_valid_items_flag is True:
         raise ValueError(
-            f"Операции {', '.join(str(item.get("id", "no_id_operation")) for item in data_unsupported_states)} содержат некорректное значение state"
+            f"Операции {', '.join(str(item.get("id", "no_id_operation"))
+                                  for item in data_unsupported_states)} содержат некорректное значение state"
         )
 
     return output_dictionary_list
@@ -43,7 +44,8 @@ def sort_by_date(dictionary_input_list: list[dict], is_reversed: bool = True) ->
             invalid_items.append(item)
     if invalid_items:
         raise ValueError(
-            f"Операции {', '.join(str(item.get('id', 'no_id_operation')) for item in invalid_items)} содержат некорректный формат даты"
+            f"Операции {', '.join(str(item.get('id', 'no_id_operation'))
+                                  for item in invalid_items)} содержат некорректный формат даты"
         )
 
     return sorted(
