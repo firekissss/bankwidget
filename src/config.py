@@ -1,4 +1,4 @@
-#card prefixes that are supported in the project.
+# card prefixes that are supported in the project.
 KNOWN_CARD_PREFIXES = [
     "maestro",
     "mastercard",
@@ -8,3 +8,5 @@ KNOWN_CARD_PREFIXES = [
     "visa gold",
     "mir"
 ]
+
+SUPPORTED_STATES = ["EXECUTED", "CANCELED"]
