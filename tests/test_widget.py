@@ -2,6 +2,9 @@ import pytest
 
 from src.widget import *
 
+
+# testing mask_account_card
+
 @pytest.mark.parametrize("card_or_acc_string, wanted_output", [
     ("Visa Platinum 7000792289606361", "Visa Platinum 7000 79** **** 6361"),
     ("Счет 73654108430135874305", "Счет **4305"),
@@ -17,7 +20,8 @@ from src.widget import *
 def test_mask_account_card_correct_values(card_or_acc_string, wanted_output):
     assert mask_account_card(card_or_acc_string) == wanted_output
 
-#errors for incorrect input values of cards and acc numbers are tested in test_masks.py
+
+# errors for incorrect input values of cards and acc numbers are tested in test_masks.py
 @pytest.mark.parametrize("incorrect_value, wanted_exc_info", [
     # Нет префикса и есть только номер (номер счёта)
     ("73654108430135874305", "Не указан тип карты или счёта"),
@@ -47,4 +51,31 @@ def test_mask_account_card_correct_values(card_or_acc_string, wanted_output):
 def test_mask_account_card_incorrect_input(incorrect_value, wanted_exc_info):
     with pytest.raises(ValueError) as result_exc_info:
         mask_account_card(incorrect_value)
+    assert str(result_exc_info.value) == wanted_exc_info
+
+
+# testing get_date
+
+@pytest.mark.parametrize("input_date_string, expected_output", [
+    ("2002-02-02T12:34:56.789012", "02.02.2002"),  # стандартный случай
+    ("2000-01-01T00:00:00.000000", "01.01.2000"),  # минимальная дата
+    ("2099-12-31T23:59:59.999999", "31.12.2099"),  # максимальная дата
+])
+def test_get_date_correct_input(input_date_string, expected_output):
+    assert get_date(input_date_string) == expected_output
+
+
+@pytest.mark.parametrize("invalid_input, wanted_exc_info", [
+    ("2023-12-25", "Некорректный формат"),  # нет времени
+    ("2023-12-25T14:30", "Некорректный формат"),  # нет секунд и микросекунд
+    ("2023-12-25T14:30:00", "Некорректный формат"),  # нет микросекунд
+    ("2023-12-25T14:30:00.abc", "Некорректный формат"),  # некорректные микросекунды
+    ("25-12-2023T14:30:00.000000", "Некорректный формат"),  # дата в неверном формате
+    ("", "Некорректный формат"),  # пустая строка
+    ("text", "Некорректный формат"),  # произвольный текст
+    ("2023-02-30T14:30:00.000000", "Некорректная дата/время"),  # несуществующая дата, исключение fromisoformat
+])
+def test_get_date_invalid_input(invalid_input, wanted_exc_info):
+    with pytest.raises(ValueError) as result_exc_info:
+        get_date(invalid_input)
     assert str(result_exc_info.value) == wanted_exc_info
