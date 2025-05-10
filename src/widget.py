@@ -2,18 +2,41 @@ import re
 from datetime import datetime
 
 from src import masks
+from src.config import KNOWN_CARD_PREFIXES
 
 
 def mask_account_card(card_info: str) -> str:
-    """returns masked account or card number"""
-    first_digit_match = re.search(r"\d", card_info)
-    if not first_digit_match:
+    """Returns masked account or card number with prefix validation"""
+
+    if not card_info or not re.search(r"\d", card_info):
         raise ValueError("Не найдены цифры в строке")
-    first_digit_index = first_digit_match.start()
-    if card_info[:4] == "Счет":
-        return card_info[:5] + masks.get_mask_account(card_info[5:])
-    else:
-        return card_info[:first_digit_index] + masks.get_mask_card_number(card_info[first_digit_index:])
+
+    stripped = card_info.strip()
+    normalized = stripped.lower()
+
+    if normalized.startswith("счет ") or normalized.startswith("счёт "):
+        prefix = stripped[:5]  # сохраняем оригинальный регистр
+        number_part = stripped[5:].strip()
+        return prefix + masks.get_mask_account(number_part)
+
+    matched_prefix = None
+    for prefix in sorted(KNOWN_CARD_PREFIXES, key=len, reverse=True):
+        if normalized.startswith(prefix):
+            matched_prefix = prefix
+            break
+
+    if matched_prefix:
+        # сохраняем оригинальный регистр префикса
+        original_prefix = card_info[:len(matched_prefix)]
+        number_part = card_info[len(matched_prefix):].strip()
+        if not number_part:
+            raise ValueError("Не найдены цифры в строке")
+        return original_prefix + " " + masks.get_mask_card_number(number_part)
+
+    if re.fullmatch(r"\d+", stripped):
+        raise ValueError("Не указан тип карты или счёта")
+
+    raise ValueError("Неподдерживаемый формат ввода")
 
 
 def get_date(input_date_string: str) -> str:
