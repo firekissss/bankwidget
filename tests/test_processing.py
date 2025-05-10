@@ -54,6 +54,44 @@ def test_filter_by_state_with_unsupported_state_in_data(input_dictionary_list_in
     ):
         filter_by_state(input_dictionary_list_invalid)
 
+
 # when pointed on pytest.raises accidentally, noticed the 'match' form of asserting exception information
 # later on there will be only 'match' constructions, because it's more comfortable than using assert below pytest.raises
 
+
+# testing sort_by_date
+
+def test_sort_by_date_descending(input_dictionary_list_correct):
+    result = sort_by_date(input_dictionary_list_correct)
+    dates = [datetime.fromisoformat(item["date"]) for item in result]
+    assert dates == sorted(dates, reverse=True)
+
+
+def test_sort_by_date_descending_with_param(input_dictionary_list_correct):
+    result = sort_by_date(input_dictionary_list_correct, is_reversed=True)
+    dates = [datetime.fromisoformat(item["date"]) for item in result]
+    assert dates == sorted(dates, reverse=True)
+
+
+def test_sort_by_date_ascending(input_dictionary_list_correct):
+    result = sort_by_date(input_dictionary_list_correct, is_reversed=False)
+    dates = [datetime.fromisoformat(item["date"]) for item in result]
+    assert dates == sorted(dates)
+
+
+@pytest.mark.parametrize("invalid_input", [None, "true", 1, 0, [], {}, 3.14])
+def test_sort_by_date_invalid_reverse_param(input_dictionary_list_correct, invalid_input):
+    with pytest.raises(ValueError, match="Параметр is_reversed должен быть типа bool"):
+        sort_by_date(input_dictionary_list_correct, is_reversed=invalid_input)
+
+
+def test_sort_by_date_invalid_dates_raise(input_dictionary_list_invalid):
+    with pytest.raises(ValueError, match=r"Операции 777777777, 666666666, 555555555 содержат некорректный формат даты"):
+        sort_by_date(input_dictionary_list_invalid)
+
+
+@pytest.mark.parametrize("reverse_parameter", [True, False])
+def test_sort_by_date_same_timestamp_stability(input_dictionary_list_same_data, reverse_parameter):
+    result = sort_by_date(input_dictionary_list_same_data, reverse_parameter)
+    ids = [item['id'] for item in result]
+    assert ids == [1, 2, 3]  # стабильная сортировка сохраняет порядок

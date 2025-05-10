@@ -32,3 +32,12 @@ def input_dictionary_list_invalid():
         {'id': 888888888, 'state': 'SMTH_UNSUPPORTED', 'date': '2023-12-31T23:59:59.999999'}
         # неподдерживаемое состояние
     ]
+
+
+@pytest.fixture
+def input_dictionary_list_same_data():
+    return [
+        {'id': 1, 'state': 'EXECUTED', 'date': '2023-01-01T12:00:00.000000'},
+        {'id': 2, 'state': 'EXECUTED', 'date': '2023-01-01T12:00:00.000000'},
+        {'id': 3, 'state': 'EXECUTED', 'date': '2023-01-01T12:00:00.000000'}
+    ]
