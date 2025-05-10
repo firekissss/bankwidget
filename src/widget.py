@@ -29,8 +29,6 @@ def mask_account_card(card_info: str) -> str:
         # сохраняем оригинальный регистр префикса
         original_prefix = card_info[:len(matched_prefix)]
         number_part = card_info[len(matched_prefix):].strip()
-        if not number_part:
-            raise ValueError("Не найдены цифры в строке")
         return original_prefix + " " + masks.get_mask_card_number(number_part)
 
     if re.fullmatch(r"\d+", stripped):
