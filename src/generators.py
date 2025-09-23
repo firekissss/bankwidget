@@ -1,3 +1,4 @@
+import textwrap
 from typing import Iterator
 
 
@@ -35,6 +36,22 @@ def transaction_descriptions(transactions: list[dict]) -> Iterator[str]:
         if isinstance(t, dict) and "description" in t:
             yield t["description"]
 
+
+def card_number_generator(start: int, end: int) -> Iterator[str]:
+    """
+    Generator that yields a card number in a sequence from start to end
+
+    :param start: the starting point of a sequence
+    :param end: the ending point of sequence
+    :return: an iterator of card numbers
+    """
+    if start<0:
+        raise ValueError("card number can't be negative")
+    if start>end:
+        raise ValueError("start value can't be bigger than end value")
+
+    for i in range(start, end+1):
+        yield " ".join(textwrap.wrap(f'{i:016d}', 4))
 
 # пример входных данных
 transactions = (
@@ -121,5 +138,9 @@ transactions = (
 if __name__ == '__main__':
     for t in filter_by_currency(transactions, "USD"):
         print(t)
+    print()
     for d in transaction_descriptions(transactions):
         print(d)
+    print()
+    for card_number in card_number_generator(0, 5):
+        print(card_number)
