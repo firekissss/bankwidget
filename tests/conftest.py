@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 
@@ -42,8 +44,9 @@ def input_dictionary_list_same_data() -> list[dict[str, str | int]]:
         {'id': 3, 'state': 'EXECUTED', 'date': '2023-01-01T12:00:00.000000'}
     ]
 
+
 @pytest.fixture
-def transactions_fully_correct_data() -> list[dict[str, any]]:
+def transactions_fully_correct_data() -> list[dict[str, Any]]:
     return [
         {
             "id": 939719570,

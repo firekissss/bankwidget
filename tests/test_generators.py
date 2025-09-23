@@ -1,6 +1,9 @@
+from typing import Any
+
 import pytest
 
-from src.generators import *
+from src.generators import (MAX_CARD_NUMBER, MAX_CARD_NUMBER_LENGTH, card_number_generator, filter_by_currency,
+                            transaction_descriptions)
 
 
 # testing filter_by_currency
@@ -13,7 +16,8 @@ from src.generators import *
         ("EUR", 0)
     ]
 )
-def test_filter_by_currency_correct_data(transactions_fully_correct_data: list[dict], currency, expected_count) -> None:
+def test_filter_by_currency_correct_data(transactions_fully_correct_data: list[dict],
+                                         currency: str, expected_count: int) -> None:
     result = list(filter_by_currency(transactions_fully_correct_data, currency))
     assert len(result) == expected_count
 
@@ -26,7 +30,7 @@ def test_filter_by_currency_empty_list() -> None:
 
 def test_filter_by_currency_no_currency_field() -> None:
     """Transactions without currency info should be skipped silently"""
-    transactions = [
+    transactions: list[dict[str, Any]] = [
         {"operationAmount": {"currency": {"code": "RUB"}}},
         {"noAmountHere": 123},  # некорректная структура
     ]
@@ -37,7 +41,7 @@ def test_filter_by_currency_no_currency_field() -> None:
 def test_filter_by_currency_transactions_none() -> None:
     """Should raise ValueError if transactions is None"""
     with pytest.raises(ValueError, match="transactions must not be None"):
-        list(filter_by_currency(None, "USD"))
+        list(filter_by_currency(None, "USD"))  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize("invalid_currency", [123, None, 3.14, ["USD"]])
@@ -108,7 +112,7 @@ def test_transaction_descriptions_various_lengths(transactions: list[dict], expe
 
 def test_transaction_descriptions_none_input() -> None:
     with pytest.raises(ValueError, match="transactions must not be None"):
-        list(transaction_descriptions(None))
+        list(transaction_descriptions(None))  # type: ignore[arg-type]
 
 
 # testing card_number_generator

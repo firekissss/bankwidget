@@ -1,8 +1,7 @@
 import textwrap
 from typing import Iterator
 
-from src.config import MAX_CARD_NUMBER
-from src.config import MAX_CARD_NUMBER_LENGTH
+from src.config import MAX_CARD_NUMBER, MAX_CARD_NUMBER_LENGTH
 
 
 def filter_by_currency(transactions: list[dict], currency: str) -> Iterator[dict]:
@@ -20,8 +19,7 @@ def filter_by_currency(transactions: list[dict], currency: str) -> Iterator[dict
 
     return (
         t for t in transactions
-        if isinstance(t, dict)
-           and t.get("operationAmount", {}).get("currency", {}).get("code") == currency
+        if isinstance(t, dict) and t.get("operationAmount", {}).get("currency", {}).get("code") == currency
     )
 
 
