@@ -1,6 +1,9 @@
 import textwrap
 from typing import Iterator
 
+from src.config import MAX_CARD_NUMBER
+from src.config import MAX_CARD_NUMBER_LENGTH
+
 
 def filter_by_currency(transactions: list[dict], currency: str) -> Iterator[dict]:
     """
@@ -45,13 +48,16 @@ def card_number_generator(start: int, end: int) -> Iterator[str]:
     :param end: the ending point of sequence
     :return: an iterator of card numbers
     """
-    if start<0:
+    if start < 0:
         raise ValueError("card number can't be negative")
-    if start>end:
+    if start > end:
         raise ValueError("start value can't be bigger than end value")
+    if end > MAX_CARD_NUMBER:
+        raise ValueError(f"card number can't be greater than {MAX_CARD_NUMBER} ({MAX_CARD_NUMBER_LENGTH} digits)")
 
-    for i in range(start, end+1):
+    for i in range(start, end + 1):
         yield " ".join(textwrap.wrap(f'{i:016d}', 4))
+
 
 # пример входных данных
 transactions = (
@@ -134,7 +140,6 @@ transactions = (
     ]
 )
 
-
 if __name__ == '__main__':
     for t in filter_by_currency(transactions, "USD"):
         print(t)
@@ -142,5 +147,5 @@ if __name__ == '__main__':
     for d in transaction_descriptions(transactions):
         print(d)
     print()
-    for card_number in card_number_generator(0, 5):
+    for card_number in card_number_generator(9999999999999997, 9999999999999999):
         print(card_number)
