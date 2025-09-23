@@ -43,7 +43,7 @@ def input_dictionary_list_same_data() -> list[dict[str, str | int]]:
     ]
 
 @pytest.fixture
-def transactions_fully_correct_data() -> list[dict]:
+def transactions_fully_correct_data() -> list[dict[str, any]]:
     return [
         {
             "id": 939719570,
