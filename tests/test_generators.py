@@ -2,8 +2,13 @@ from typing import Any
 
 import pytest
 
-from src.generators import (MAX_CARD_NUMBER, MAX_CARD_NUMBER_LENGTH, card_number_generator, filter_by_currency,
-                            transaction_descriptions)
+from src.generators import (
+    MAX_CARD_NUMBER,
+    MAX_CARD_NUMBER_LENGTH,
+    card_number_generator,
+    filter_by_currency,
+    transaction_descriptions,
+)
 
 
 # testing filter_by_currency
