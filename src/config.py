@@ -4,6 +4,11 @@
 MIN_ACC_NUMBER_LENGTH = 4
 MAX_ACC_NUMBER_LENGTH = 34
 
+# max card number
+MAX_CARD_NUMBER = MAX_CARD_NUMBER = 10 ** 16 - 1
+# max card number length
+MAX_CARD_NUMBER_LENGTH = 16
+
 # card prefixes
 KNOWN_CARD_PREFIXES = [
     "maestro",

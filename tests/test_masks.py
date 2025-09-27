@@ -2,6 +2,7 @@ import pytest
 
 from src.masks import get_mask_account, get_mask_card_number
 
+
 # testing get_mask_card_number
 
 def test_get_mask_card_number_correct(correct_card_number: str) -> None:

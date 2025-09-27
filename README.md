@@ -35,35 +35,95 @@ gh repo clone firekissss/bankwidget
 
 Do not launch it in any possible way! There's nothing to launch yet!
 
-There are some properly-working modules with functions:
+# Modules Overview
 
-- masks.py
-    + get_mask_card_number (returns masked card number in XXXX XX** **** XXXX format)
-    + get_mask_account (returns masked bank account number in **XXXX format)
-- widget.py
-    + mask_account_card (returns masked account or card number, uses both of previous functions)
-    + get_date (extracts date in DD.MM.YYYY format from ISO datetime string)
-- processing.py
-    + filter_by_state (filters the list of dictionaries by the 'state' parameter, EXECUTED by default)
-    + sort_by_date (sorts an input dictionary list by key 'date' and value in ISO format
-      in descending (default) or ascending order)
+This project contains several properly-working modules with utility functions:
 
-You can launch these functions by adding `print` command in module you need and give some input data as parameters.
+### `masks.py`
+- **`get_mask_card_number`** – returns a masked card number in `XXXX XX** **** XXXX` format.
+- **`get_mask_account`** – returns a masked bank account number in `**XXXX` format.
 
-### For example
+### `widget.py`
+- **`mask_account_card`** – returns a masked account or card number, using both functions from `masks.py`.
+- **`get_date`** – extracts the date in `DD.MM.YYYY` format from an ISO datetime string.
 
-Add this at the end of processing.py:
+### `processing.py`
+- **`filter_by_state`** – filters a list of dictionaries by the `'state'` key (defaults to `'EXECUTED'`).
+- **`sort_by_date`** – sorts a list of dictionaries by the `'date'` key (ISO format), in descending order by default (ascending optional).
+
+### `generators.py`
+- **`filter_by_currency`** – returns an iterator of transactions that match the specified currency.
+- **`transaction_descriptions`** – yields the description of each transaction from a given list.
+- **`card_number_generator`** – generates card numbers as an iterator, from a specified start to end value.
+
+## Usage Examples
+
+You can run these functions by calling them in Python with some input data and optionally printing the results.
+
+---
+### `sort_by_date`
+```python
+from src.processing import sort_by_date
+
+data = [
+    {'id': 41428829, 'state': 'EXECUTED', 'date': '2019-07-03T18:35:29.512364'},
+    {'id': 939719570, 'state': 'EXECUTED', 'date': '2018-06-30T02:08:58.425572'},
+    {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
+    {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'},
+]
+
+# Sort in ascending order
+print(sort_by_date(data, is_reversed=False))
+
+```
+---
+### `filter_by_currency`
 
 ```python
-print(sort_by_date([{'id': 41428829, 'state': 'EXECUTED', 'date': '2019-07-03T18:35:29.512364'},
-                    {'id': 939719570, 'state': 'EXECUTED', 'date': '2018-06-30T02:08:58.425572'},
-                    {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
-                    {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}],
-                   is_reversed=False
-                   ))
-```
+from src.generators import filter_by_currency
 
-and run processing.py file. It will show you the result of the function.
+transactions = [
+    {"operationAmount": {"currency": {"code": "USD"}}, "description": "Payment 1"},
+    {"operationAmount": {"currency": {"code": "RUB"}}, "description": "Payment 2"},
+]
+
+# Filter only USD transactions
+for t in filter_by_currency(transactions, "USD"):
+    print(t["description"])
+# Output:
+# Payment 1
+```
+---
+###  `transaction_descriptions`
+```python
+from src.generators import transaction_descriptions
+
+transactions = [
+    {"description": "Payment 1"},
+    {"description": "Payment 2"},
+]
+
+for desc in transaction_descriptions(transactions):
+    print(desc)
+# Output:
+# Payment 1
+# Payment 2
+```
+---
+### `card_number_generator`
+```python
+from src.generators import card_number_generator
+
+# Generate card numbers from 1 to 5
+for number in card_number_generator(1, 5):
+    print(number)
+# Output:
+# 0000 0000 0000 0001
+# 0000 0000 0000 0002
+# 0000 0000 0000 0003
+# 0000 0000 0000 0004
+# 0000 0000 0000 0005
+```
 
 ## Development
 
