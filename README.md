@@ -56,6 +56,9 @@ This project contains several properly-working modules with utility functions:
 - **`transaction_descriptions`** – yields the description of each transaction from a given list.
 - **`card_number_generator`** – generates card numbers as an iterator, from a specified start to end value.
 
+### `decorators.py`
+
+- **`log`** – decorator that logs function calls: timestamp, function name, arguments, result, and exceptions. If a filename is provided, logs are written to that file; otherwise they are printed to the console/
 ## Usage Examples
 
 You can run these functions by calling them in Python with some input data and optionally printing the results.
@@ -123,6 +126,28 @@ for number in card_number_generator(1, 5):
 # 0000 0000 0000 0003
 # 0000 0000 0000 0004
 # 0000 0000 0000 0005
+```
+---
+### `log`
+```python
+from src.decorators import log
+
+# Example 1: logging to console
+@log()
+def add(a, b):
+    return a + b
+
+print(add(5, 10))  # logs call, args, result to console
+
+# Example 2: logging to a file
+@log(filename="function_calls.log")
+def divide(a, b):
+    return a / b
+
+try:
+    divide(10, 0)  # logs call and exception to the file
+except ZeroDivisionError:
+    pass
 ```
 
 ## Development

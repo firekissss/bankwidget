@@ -3,7 +3,26 @@ import functools
 import traceback
 
 
-def log(filename = None):
+def log(filename=None):
+    """
+    Decorator that logs function calls with timestamp, arguments,
+    return value, and errors.
+
+    Parameters
+    ----------
+    filename : str or None, optional
+        Path to a log file. If None, logs are printed to the console.
+
+    Returns
+    -------
+    function
+        Wrapped function with logging enabled.
+
+    Raises
+    ------
+    Exception
+        Re-raises any exception raised by the wrapped function after logging it.
+    """
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -20,7 +39,7 @@ def log(filename = None):
                 result = None
                 raise
             finally:
-                if filename == None:
+                if filename is None:
                     print("\n".join(log_text))
                 else:
                     with open(filename, "a", encoding="utf-8") as f:
