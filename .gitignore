@@ -78,3 +78,7 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 .coverage
+
+# testing and debugging
+src/app.log
+src/debug_and_test.py
