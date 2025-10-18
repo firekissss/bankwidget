@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import pytest
@@ -124,4 +125,11 @@ def transactions_fully_correct_data() -> list[dict[str, Any]]:
             "to": "Счет 14211924144426031657"
         }
     ]
+
+
 # 3 transactions in USD, 2 in RUB
+
+@pytest.fixture
+def transactions_data_not_a_list():
+    """Некорректные данные — словарь вместо списка."""
+    return {"id": 1, "amount": 100}
