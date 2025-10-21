@@ -13,14 +13,14 @@ def exchange_through_api(amount, currency, target):
 
     url = "https://api.apilayer.com/exchangerates_data/convert"
     payload = {
-        "amount": amount,###
+        "amount": amount,
         "from": currency,
         "to": target
     }
     headers = {"apikey": api_key}
     try:
         response = requests.get(url, headers=headers, params=payload, timeout=5)
-        response.raise_for_status()  # выбросит ошибку, если код ответа не 200 ###
+        response.raise_for_status()  # выбросит ошибку, если код ответа не 200
     except requests.Timeout:
         raise RuntimeError("Превышено время ожидания ответа от API")
     except requests.ConnectionError:
@@ -37,9 +37,12 @@ def exchange_through_api(amount, currency, target):
         error_info = data.get("error", {})
         raise RuntimeError(f"API вернул ошибку: {error_info}")
 
-    result_value = data.get("result")
-    if result_value is None:
+    if "result" not in data:
         raise RuntimeError("Ответ не содержит ключ 'result'")
+
+    result_value = data["result"]
+    if result_value is None:
+        raise RuntimeError("Ключ 'result' содержит пустое значение (None)")
 
     try:
         return float(result_value)
@@ -66,7 +69,7 @@ def convert_to_rub(transaction: Dict) -> float:
 
     try:
         return exchange_through_api(amount, currency, "RUB")
-    except RuntimeError as e:
+    except Exception as e:
         raise RuntimeError(f"Ошибка конвертации валюты: {e}")
 
 # 'operationAmount': {
