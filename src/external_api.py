@@ -6,6 +6,16 @@ from dotenv import load_dotenv
 
 
 def exchange_through_api(amount, currency, target):
+    """
+        Convert an amount from one currency to another using the ExchangeRates API.
+
+        :param amount: The numeric amount to convert.
+        :param currency: The source currency code (e.g., 'USD').
+        :param target: The target currency code (e.g., 'EUR').
+        :return: The converted amount as a float.
+        :raises RuntimeError: If the API key is missing, request fails, API returns an error,
+                              or the result cannot be parsed.
+    """
     load_dotenv()
     api_key = os.getenv('APIKEY')
     if not api_key:
@@ -54,6 +64,16 @@ def exchange_through_api(amount, currency, target):
 
 
 def convert_to_rub(transaction: Dict) -> float:
+    """
+        Convert the amount in a transaction to Russian Rubles (RUB).
+
+        :param transaction: A dictionary representing a transaction,
+                            expected to have 'operationAmount' with 'amount' and 'currency'.
+        :return: The transaction amount converted to RUB as a float.
+        :raises TypeError: If the input is not a dictionary.
+        :raises ValueError: If the transaction structure or data types are incorrect.
+        :raises RuntimeError: If currency conversion via the API fails.
+    """
     if not isinstance(transaction, dict):
         raise TypeError("Ожидался словарь с данными транзакции")
 

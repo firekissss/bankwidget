@@ -1,5 +1,5 @@
 import re
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
