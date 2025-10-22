@@ -27,7 +27,9 @@ def get_transactions_from_json(path: str) -> List[Dict]:
                 return data
             else:
                 utils_logger.warning(f"Invalid data format in {path}: expected list, got {type(data).__name__}")
-
+            # Поставил уровень WARNING здесь и далее в этой функции, т.к. она обрабатывает
+            # исключения "в тихую", не выбрасывая исключение, просто возвращает пустой список.
+            # Считаю целесообразным выводить в лог предупреждение, а не ошибку.
     except FileNotFoundError:
         utils_logger.warning(f"File not found: {path}")
     except json.JSONDecodeError as e:
