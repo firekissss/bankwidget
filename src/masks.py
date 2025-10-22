@@ -3,6 +3,7 @@ import logging
 from src.config import MAX_ACC_NUMBER_LENGTH, MIN_ACC_NUMBER_LENGTH
 from src.decorators import log_exceptions
 
+
 masks_logger = logging.getLogger(__name__)
 file_handler = logging.FileHandler('logs/masks.log')
 file_formatter = logging.Formatter('%(asctime)s:%(filename)s:%(levelname)s: %(message)s')

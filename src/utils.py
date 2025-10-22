@@ -2,6 +2,7 @@ import json
 import logging
 from typing import Dict, List
 
+
 utils_logger = logging.getLogger(__name__)
 file_handler = logging.FileHandler('logs/utils.log')
 file_formatter = logging.Formatter('%(asctime)s:%(filename)s:%(levelname)s: %(message)s')
