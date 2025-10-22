@@ -23,6 +23,7 @@ def log(filename=None):
     Exception
         Re-raises any exception raised by the wrapped function after logging it.
     """
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -45,6 +46,42 @@ def log(filename=None):
                     with open(filename, "a", encoding="utf-8") as f:
                         f.write("\n".join(log_text) + "\n\n")
             return result
+
+        return wrapper
+
+    return decorator
+
+
+def log_exceptions(logger):
+    """
+    Decorator that automatically logs any unhandled exceptions raised within the wrapped function.
+
+    When an exception occurs, it is logged with ERROR level (including the full stack trace)
+    using the provided logger, and then re-raised to preserve the original behavior.
+
+    Parameters
+    ----------
+    logger : logging.Logger
+        The logger instance used to record error messages.
+
+    Returns
+    -------
+    Callable
+        A decorator that wraps the target function with automatic exception logging.
+
+    Raises
+    ------
+    Exception
+        Any exception raised inside the wrapped function is logged and re-raised.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                logger.exception(str(e))
+                raise
 
         return wrapper
 
