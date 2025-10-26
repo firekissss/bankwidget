@@ -1,10 +1,14 @@
 import json
 import logging
+import os
 from typing import Dict, List
 
+log_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, 'utils.log')
 
 utils_logger = logging.getLogger(__name__)
-file_handler = logging.FileHandler('logs/utils.log')
+file_handler = logging.FileHandler('../logs/utils.log', mode='w')
 file_formatter = logging.Formatter('%(asctime)s:%(filename)s:%(levelname)s: %(message)s')
 file_handler.setFormatter(file_formatter)
 utils_logger.addHandler(file_handler)

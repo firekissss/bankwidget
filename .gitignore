@@ -85,3 +85,5 @@ src/debug_and_test.py
 data/operations.json
 
 .env
+
+logs/
