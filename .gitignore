@@ -86,4 +86,5 @@ data/operations.json
 
 .env
 
-logs/
+logs
+data
