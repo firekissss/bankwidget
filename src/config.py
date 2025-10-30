@@ -1,6 +1,7 @@
 # values and ranges that are supported in the project.
 from typing import Any
 
+
 # bank account length range
 MIN_ACC_NUMBER_LENGTH = 4
 MAX_ACC_NUMBER_LENGTH = 34
@@ -23,7 +24,6 @@ KNOWN_CARD_PREFIXES = [
 
 # states of operations
 SUPPORTED_STATES = ["EXECUTED", "CANCELED"]
-
 
 # Обязательные колонки в содержимом импортируемого файла и типы данных в них.
 # Если не требуется проверка типа, указать Any.

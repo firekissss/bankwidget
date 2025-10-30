@@ -1,11 +1,60 @@
-from typing import List, Dict, Any
-from src.utils import get_transactions_from_json
-import src.config as cfg
+from typing import Any, Dict, List
 
 import pandas as pd
 
+import src.config as cfg
+from src.utils import get_transactions_from_json
+
 
 def import_transactions_csv_excel_json(file_path: str) -> List[Dict]:
+    """
+    Import transactions from a .csv, .xlsx, or .json file and convert them to a standardized list of dictionaries.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the input file. Supported file types are '.csv', '.xlsx', and '.json'.
+
+    Returns
+    -------
+    List[Dict]
+        A list of transactions in the following format:
+        {
+            "id": ...,
+            "state": ...,
+            "date": ...,
+            "operationAmount": {
+                "amount": ...,
+                "currency": {
+                    "name": ...,
+                    "code": ...
+                }
+            },
+            "description": ...,
+            "from": ...,
+            "to": ...
+        }
+
+    Raises
+    ------
+    ValueError
+        If the file type is unsupported, required columns are missing, the configuration
+        in REQUIRED_DATA_IN_TRANSACTIONS is invalid, or mandatory values are missing
+        and autofill mode is disabled.
+
+    RuntimeError
+        If there is an error opening or reading a .csv or .xlsx file (other than empty file).
+
+    Notes
+    -----
+    - For .json files, error handling is delegated to the `get_transactions_from_json` function.
+    - AUTOADD_MISSING_VALUES configuration affects how missing values are filled:
+      0 - raise error for missing values,
+      1 - fill numeric types with 0, others with empty string,
+      2 - fill missing values with None.
+    - All values are coerced to the type specified in REQUIRED_DATA_IN_TRANSACTIONS,
+      unless the type is `Any`, in which case the original value is kept.
+    """
     if file_path.endswith('.json'):
         return get_transactions_from_json(file_path)
         # обработка ошибок открытия файла .json уже реализована в функции
@@ -35,7 +84,8 @@ def import_transactions_csv_excel_json(file_path: str) -> List[Dict]:
         col_type, mandatory = value
 
         if not isinstance(col_type, type):
-            raise ValueError(f"Некорректный тип для колонки '{col}': {col_type}. Должен быть типом (int, float, str, Any или любой другой тип)")
+            raise ValueError(f"Некорректный тип для колонки '{col}': {col_type}. Должен быть типом (int, float, str, "
+                             f"Any или любой другой тип)")
 
         if mandatory not in [0, 1]:
             raise ValueError(f"Некорректный флаг обязательности для колонки '{col}': {mandatory}. Допустимо 0 или 1")

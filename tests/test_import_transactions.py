@@ -1,10 +1,8 @@
 import json
 import re
-from re import match
 from typing import Any
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import mock_open, patch
 
-import numpy as np
 import pandas as pd
 import pytest
 

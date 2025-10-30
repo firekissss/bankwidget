@@ -4,6 +4,7 @@ import os
 from src.config import MAX_ACC_NUMBER_LENGTH, MIN_ACC_NUMBER_LENGTH
 from src.decorators import log_exceptions
 
+
 log_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
 os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, 'masks.log')
