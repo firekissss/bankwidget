@@ -8,12 +8,22 @@ import pandas as pd
 def import_transactions_csv_excel(file_path: str) -> List[Dict]:
     if file_path.endswith('.json'):
         return get_transactions_from_json(file_path)
-    elif file_path.endswith('.csv'):
-        df = pd.read_csv(file_path, delimiter=';', dtype=str)
-    elif file_path.endswith('.xlsx'):
-        df = pd.read_excel(file_path, dtype=str)
-    else:
-        raise ValueError(f'Неподдерживаемый тип файла: {file_path}. Поддерживаются только .json, .csv и .xlsx.')
+        # обработка ошибок открытия файла .json уже реализована в функции
+    try:
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path, delimiter=';', dtype=str)
+        elif file_path.endswith('.xlsx'):
+            df = pd.read_excel(file_path, dtype=str)
+        else:
+            raise ValueError(
+                f"Неподдерживаемый тип файла: {file_path}. Поддерживаются только .json, .csv и .xlsx."
+            )
+    except ValueError:
+        # Тип файла неправильный — пробрасываем дальше без изменений
+        raise
+    except Exception as e:
+        # Любая другая ошибка при открытии/чтении файла
+        raise RuntimeError(f"Ошибка открытия файла {file_path}: {e}") from e
 
     # Проверка конфигурации REQUIRED_DATA_IN_TRANSACTIONS
     for col, value in REQUIRED_DATA_IN_TRANSACTIONS.items():
@@ -34,7 +44,6 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
             f"Некорректный параметр автозаполнения AUTOADD_MISSING_VALUES: {AUTOADD_MISSING_VALUES}. Допустимо 0, 1 "
             f"или 2")
 
-
     # Проверка обязательных колонок на наличие
     required_mandatory_cols = {col for col, (_, mandatory) in REQUIRED_DATA_IN_TRANSACTIONS.items() if mandatory == 1}
     missing = required_mandatory_cols - set(df.columns)
@@ -54,7 +63,7 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
                 elif AUTOADD_MISSING_VALUES == 1:
                     if col_type in [int, float]:
                         value = 0
-                    elif col_type is str or col_type is Any:
+                    else:
                         value = ""
 
                 elif AUTOADD_MISSING_VALUES == 2:
