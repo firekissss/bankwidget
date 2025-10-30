@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from src.utils import get_transactions_from_json
-from src.config import REQUIRED_DATA_IN_TRANSACTIONS, AUTOADD_MISSING_VALUES
+import src.config as cfg
 
 import pandas as pd
 
@@ -16,17 +16,19 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
         )
     try:
         if file_path.endswith('.csv'):
-            df = pd.read_csv(file_path, delimiter=';', dtype=str)
+            df = pd.read_csv(file_path, delimiter=';')
         elif file_path.endswith('.xlsx'):
-            df = pd.read_excel(file_path, dtype=str)
+            df = pd.read_excel(file_path)
     except pd.errors.EmptyDataError:
         return []
     except Exception as e:
         # любая другая ошибка при открытии/чтении файла
         raise RuntimeError(f"Ошибка при открытии или чтении файла {file_path}: {e}") from e
 
+    required_data = cfg.REQUIRED_DATA_IN_TRANSACTIONS
+
     # Проверка конфигурации REQUIRED_DATA_IN_TRANSACTIONS
-    for col, value in REQUIRED_DATA_IN_TRANSACTIONS.items():
+    for col, value in required_data.items():
         if not isinstance(value, tuple) or len(value) != 2:
             raise ValueError(f"Некорректное описание колонки '{col}': должно быть кортежем (тип, обязательность)")
 
@@ -39,13 +41,14 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
             raise ValueError(f"Некорректный флаг обязательности для колонки '{col}': {mandatory}. Допустимо 0 или 1")
 
     # Проверка AUTOADD_MISSING_VALUES
-    if AUTOADD_MISSING_VALUES not in [0, 1, 2]:
+    autoadd_mode = cfg.AUTOADD_MISSING_VALUES
+    if autoadd_mode not in [0, 1, 2]:
         raise ValueError(
-            f"Некорректный параметр автозаполнения AUTOADD_MISSING_VALUES: {AUTOADD_MISSING_VALUES}. Допустимо 0, 1 "
+            f"Некорректный параметр автозаполнения AUTOADD_MISSING_VALUES: {autoadd_mode}. Допустимо 0, 1 "
             f"или 2")
 
     # Проверка обязательных колонок на наличие
-    required_mandatory_cols = {col for col, (_, mandatory) in REQUIRED_DATA_IN_TRANSACTIONS.items() if mandatory == 1}
+    required_mandatory_cols = {col for col, (_, mandatory) in required_data.items() if mandatory == 1}
     missing = required_mandatory_cols - set(df.columns)
     if missing:
         raise ValueError(f"В файле отсутствуют обязательные колонки: {', '.join(missing)}")
@@ -53,20 +56,20 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
     transactions = []
     for index, row in df.iterrows():
         transaction_data = {}
-        for col, (col_type, mandatory) in REQUIRED_DATA_IN_TRANSACTIONS.items():
+        for col, (col_type, mandatory) in required_data.items():
             value = row.get(col, None)
 
             # Если в ячейке пустое значение
             if pd.isna(value) or value is None:
-                if mandatory == 1 and AUTOADD_MISSING_VALUES == 0:
+                if mandatory == 1 and autoadd_mode == 0:
                     raise ValueError(f"Отсутствует значение в обязательной колонке '{col}' строки {index}")
-                elif AUTOADD_MISSING_VALUES == 1:
+                elif autoadd_mode == 1:
                     if col_type in [int, float]:
                         value = 0
                     else:
                         value = ""
 
-                elif AUTOADD_MISSING_VALUES == 2:
+                elif autoadd_mode == 2:
                     value = None
 
             # Если в ячейке есть значение, приводим тип, если он указан в конфиге
