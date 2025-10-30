@@ -18,11 +18,12 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
             raise ValueError(
                 f"Неподдерживаемый тип файла: {file_path}. Поддерживаются только .json, .csv и .xlsx."
             )
+    except pd.errors.EmptyDataError:
+        return []
     except ValueError:
-        # Тип файла неправильный — пробрасываем дальше без изменений
         raise
     except Exception as e:
-        # Любая другая ошибка при открытии/чтении файла
+        # любая другая ошибка при открытии/чтении файла
         raise RuntimeError(f"Ошибка открытия файла {file_path}: {e}") from e
 
     # Проверка конфигурации REQUIRED_DATA_IN_TRANSACTIONS
