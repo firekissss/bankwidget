@@ -84,7 +84,7 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
             "state": transaction_data.get("state"),
             "date": transaction_data.get("date"),
             "operationAmount": {
-                "amount": str(transaction_data.get("amount")),
+                "amount": transaction_data.get("amount"),
                 "currency": {
                     "name": transaction_data.get("currency_name"),
                     "code": transaction_data.get("currency_code")
