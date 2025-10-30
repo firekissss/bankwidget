@@ -5,7 +5,7 @@ import src.config as cfg
 import pandas as pd
 
 
-def import_transactions_csv_excel(file_path: str) -> List[Dict]:
+def import_transactions_csv_excel_json(file_path: str) -> List[Dict]:
     if file_path.endswith('.json'):
         return get_transactions_from_json(file_path)
         # обработка ошибок открытия файла .json уже реализована в функции
@@ -34,8 +34,8 @@ def import_transactions_csv_excel(file_path: str) -> List[Dict]:
 
         col_type, mandatory = value
 
-        if col_type not in [int, float, str, Any]:
-            raise ValueError(f"Некорректный тип для колонки '{col}': {col_type}. Допустимо int, float, str, Any")
+        if not isinstance(col_type, type):
+            raise ValueError(f"Некорректный тип для колонки '{col}': {col_type}. Должен быть типом (int, float, str, Any или любой другой тип)")
 
         if mandatory not in [0, 1]:
             raise ValueError(f"Некорректный флаг обязательности для колонки '{col}': {mandatory}. Допустимо 0 или 1")
