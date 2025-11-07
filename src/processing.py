@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from src.config import SUPPORTED_STATES
@@ -55,3 +56,16 @@ def sort_by_date(dictionary_input_list: list[dict], is_reversed: bool = True) ->
     )
     # Не использую функцию get_date из модуля widget, т.к. она возвращает только дату
     # в таком случае, операции за один и тот же день могут неверно сортироваться из-за неучёта времени
+
+
+def search_in_descriptions(data: list[dict], search: str) -> list[dict]:
+    if not isinstance(data, list):
+        raise ValueError(f"Параметр data должен быть списком, получено: {type(data).__name__}")
+    output: list[dict] = []
+    for item in data:
+        if not isinstance(item, dict):
+            raise ValueError(f"Список должен содержать словари, но содержит элементы типа {type(item).__name__}")
+        description = item.get("description", None)
+        if description is not None and re.search(search, description, re.IGNORECASE):
+            output.append(item)
+    return output

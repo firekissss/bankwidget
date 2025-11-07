@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 import pytest
 
-from src.processing import datetime, filter_by_state, sort_by_date
+from src.processing import datetime, filter_by_state, sort_by_date, search_in_descriptions
 
 
 # testing filter_by_state
@@ -115,3 +115,24 @@ def test_sort_by_date_same_timestamp_stability(
     result = sort_by_date(input_dictionary_list_same_data, reverse_parameter)
     ids = [item['id'] for item in result]
     assert ids == [1, 2, 3]  # стабильная сортировка сохраняет порядок
+
+
+# testing process_bank_search
+def test_search_correct(transactions_fully_correct_data):
+    test_prompt = "Перевод организации"
+    expected_results = [transactions_fully_correct_data[0], transactions_fully_correct_data[4]]
+    assert search_in_descriptions(transactions_fully_correct_data, test_prompt) == expected_results
+
+
+def test_search_nothing_found(transactions_fully_correct_data):
+    non_existing_description = "несуществующее описание 123"
+    assert search_in_descriptions(transactions_fully_correct_data, non_existing_description) == []
+
+
+@pytest.mark.parametrize("incorrect_data, expected_msg", [
+    ("string 123", "Параметр data должен быть списком, получено: str"),
+    (["not", "a", "dict"], "Список должен содержать словари, но содержит элементы типа str")
+])
+def test_incorrect_input_instance(incorrect_data, expected_msg):
+    with pytest.raises(ValueError, match=expected_msg) as result_exc_info:
+        search_in_descriptions(incorrect_data, "something")
