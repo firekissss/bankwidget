@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from datetime import datetime
 
 from src.config import SUPPORTED_STATES
@@ -69,3 +70,20 @@ def search_in_descriptions(data: list[dict], search: str) -> list[dict]:
         if description is not None and re.search(search, description, re.IGNORECASE):
             output.append(item)
     return output
+
+
+def count_transactions_in_categories(data: list[dict], categories: list) -> dict[str, int]:
+    if not isinstance(data, list):
+        raise ValueError(f"Параметр data должен быть списком, получено: {type(data).__name__}")
+    if not isinstance(categories, list):
+        raise ValueError(f"Параметр categories должен быть списком, получено: {type(categories).__name__}")
+    output_count = defaultdict(int)
+    for item in data:
+        if not isinstance(item, dict):
+            raise ValueError(f"Список должен содержать словари, но содержит элементы типа {type(item).__name__}")
+        description = item.get("description", None)
+        if description is None: continue
+        for category in categories:
+            if re.search(category, description, re.IGNORECASE):
+                output_count[category] += 1
+    return output_count

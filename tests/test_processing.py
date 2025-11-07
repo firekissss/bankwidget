@@ -1,8 +1,11 @@
+from collections import defaultdict
 from typing import Any, Optional
 
 import pytest
 
-from src.processing import datetime, filter_by_state, sort_by_date, search_in_descriptions
+from src.processing import datetime, filter_by_state, sort_by_date, search_in_descriptions, \
+    count_transactions_in_categories
+from tests.conftest import transactions_fully_correct_data
 
 
 # testing filter_by_state
@@ -117,7 +120,7 @@ def test_sort_by_date_same_timestamp_stability(
     assert ids == [1, 2, 3]  # стабильная сортировка сохраняет порядок
 
 
-# testing process_bank_search
+# testing search_in_descriptions
 def test_search_correct(transactions_fully_correct_data):
     test_prompt = "Перевод организации"
     expected_results = [transactions_fully_correct_data[0], transactions_fully_correct_data[4]]
@@ -134,5 +137,28 @@ def test_search_nothing_found(transactions_fully_correct_data):
     (["not", "a", "dict"], "Список должен содержать словари, но содержит элементы типа str")
 ])
 def test_incorrect_input_instance(incorrect_data, expected_msg):
-    with pytest.raises(ValueError, match=expected_msg) as result_exc_info:
+    with pytest.raises(ValueError, match=expected_msg):
         search_in_descriptions(incorrect_data, "something")
+
+
+# testing count_transactions_in_categories
+def test_count_transactions_correct(transactions_fully_correct_data):
+    categories = ["Перевод организации", "Перевод со счета на счет", "Перевод с карты на карту", "something 123"]
+    expected_results = {
+        'Перевод организации': 2,
+        'Перевод со счета на счет': 2,
+        'Перевод с карты на карту': 1
+    }
+    output_defaultdict = count_transactions_in_categories(transactions_fully_correct_data, categories)
+    assert output_defaultdict == expected_results
+    assert output_defaultdict["something 123"] == 0
+
+
+@pytest.mark.parametrize("incorrect_data, incorrect_categories, expected_msg", [
+    ("string 123", ["1", "2"], "Параметр data должен быть списком, получено: str"),
+    (["not", "a", "dict"], ["1", "2", "3"], "Список должен содержать словари, но содержит элементы типа str"),
+    ([{}], "categories are given as string", "Параметр categories должен быть списком, получено: str")
+])
+def test_count_transactions_wrong_params(incorrect_data, incorrect_categories, expected_msg):
+    with pytest.raises(ValueError, match=expected_msg):
+        count_transactions_in_categories(incorrect_data, incorrect_categories)
