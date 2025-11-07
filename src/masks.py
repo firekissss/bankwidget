@@ -1,11 +1,16 @@
 import logging
+import os
 
 from src.config import MAX_ACC_NUMBER_LENGTH, MIN_ACC_NUMBER_LENGTH
 from src.decorators import log_exceptions
 
 
+log_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, 'masks.log')
+
 masks_logger = logging.getLogger(__name__)
-file_handler = logging.FileHandler('logs/masks.log')
+file_handler = logging.FileHandler(log_file, mode='w')
 file_formatter = logging.Formatter('%(asctime)s:%(filename)s:%(levelname)s: %(message)s')
 file_handler.setFormatter(file_formatter)
 masks_logger.addHandler(file_handler)

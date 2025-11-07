@@ -1,0 +1,152 @@
+from typing import Any, Dict, List
+
+import pandas as pd
+
+import src.config as cfg
+from src.utils import get_transactions_from_json
+
+
+def import_transactions_csv_excel_json(file_path: str) -> List[Dict]:
+    """
+    Import transactions from a .csv, .xlsx, or .json file and convert them to a standardized list of dictionaries.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the input file. Supported file types are '.csv', '.xlsx', and '.json'.
+
+    Returns
+    -------
+    List[Dict]
+        A list of transactions in the following format:
+        {
+            "id": ...,
+            "state": ...,
+            "date": ...,
+            "operationAmount": {
+                "amount": ...,
+                "currency": {
+                    "name": ...,
+                    "code": ...
+                }
+            },
+            "description": ...,
+            "from": ...,
+            "to": ...
+        }
+
+    Raises
+    ------
+    ValueError
+        If the file type is unsupported, required columns are missing, the configuration
+        in REQUIRED_DATA_IN_TRANSACTIONS is invalid, or mandatory values are missing
+        and autofill mode is disabled.
+
+    RuntimeError
+        If there is an error opening or reading a .csv or .xlsx file (other than empty file).
+
+    Notes
+    -----
+    - For .json files, error handling is delegated to the `get_transactions_from_json` function.
+    - AUTOADD_MISSING_VALUES configuration affects how missing values are filled:
+      0 - raise error for missing values,
+      1 - fill numeric types with 0, others with empty string,
+      2 - fill missing values with None.
+    - All values are coerced to the type specified in REQUIRED_DATA_IN_TRANSACTIONS,
+      unless the type is `Any`, in which case the original value is kept.
+    """
+    if file_path.endswith('.json'):
+        return get_transactions_from_json(file_path)
+        # обработка ошибок открытия файла .json уже реализована в функции
+
+    if not (file_path.endswith('.csv') or file_path.endswith('.xlsx')):
+        raise ValueError(
+            f"Неподдерживаемый тип файла: {file_path}. Поддерживаются только .json, .csv и .xlsx."
+        )
+    try:
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path, delimiter=';')
+        elif file_path.endswith('.xlsx'):
+            df = pd.read_excel(file_path)
+    except pd.errors.EmptyDataError:
+        return []
+    except Exception as e:
+        # любая другая ошибка при открытии/чтении файла
+        raise RuntimeError(f"Ошибка при открытии или чтении файла {file_path}: {e}") from e
+
+    required_data = cfg.REQUIRED_DATA_IN_TRANSACTIONS
+
+    # Проверка конфигурации REQUIRED_DATA_IN_TRANSACTIONS
+    for col, value in required_data.items():
+        if not isinstance(value, tuple) or len(value) != 2:
+            raise ValueError(f"Некорректное описание колонки '{col}': должно быть кортежем (тип, обязательность)")
+
+        col_type, mandatory = value
+
+        if not isinstance(col_type, type):
+            raise ValueError(f"Некорректный тип для колонки '{col}': {col_type}. Должен быть типом (int, float, str, "
+                             f"Any или любой другой тип)")
+
+        if mandatory not in [0, 1]:
+            raise ValueError(f"Некорректный флаг обязательности для колонки '{col}': {mandatory}. Допустимо 0 или 1")
+
+    # Проверка AUTOADD_MISSING_VALUES
+    autoadd_mode = cfg.AUTOADD_MISSING_VALUES
+    if autoadd_mode not in [0, 1, 2]:
+        raise ValueError(
+            f"Некорректный параметр автозаполнения AUTOADD_MISSING_VALUES: {autoadd_mode}. Допустимо 0, 1 "
+            f"или 2")
+
+    # Проверка обязательных колонок на наличие
+    required_mandatory_cols = {col for col, (_, mandatory) in required_data.items() if mandatory == 1}
+    missing = required_mandatory_cols - set(df.columns)
+    if missing:
+        raise ValueError(f"В файле отсутствуют обязательные колонки: {', '.join(missing)}")
+
+    transactions = []
+    for index, row in df.iterrows():
+        transaction_data = {}
+        for col, (col_type, mandatory) in required_data.items():
+            value = row.get(col, None)
+
+            # Если в ячейке пустое значение
+            if pd.isna(value) or value is None:
+                if mandatory == 1 and autoadd_mode == 0:
+                    raise ValueError(f"Отсутствует значение в обязательной колонке '{col}' строки {index}")
+                elif autoadd_mode == 1:
+                    if col_type in [int, float]:
+                        value = 0
+                    else:
+                        value = ""
+
+                elif autoadd_mode == 2:
+                    value = None
+
+            # Если в ячейке есть значение, приводим тип, если он указан в конфиге
+            else:
+                if col_type is not Any:
+                    try:
+                        value = col_type(value)
+                    except (ValueError, TypeError) as e:
+                        raise type(e)(f"Ошибка в колонке '{col}' строки {index}: {e}") from e
+            transaction_data[col] = value
+
+        # Форматирование итогового словаря
+        transaction = {
+            "id": transaction_data.get("id"),
+            "state": transaction_data.get("state"),
+            "date": transaction_data.get("date"),
+            "operationAmount": {
+                "amount": transaction_data.get("amount"),
+                "currency": {
+                    "name": transaction_data.get("currency_name"),
+                    "code": transaction_data.get("currency_code")
+                }
+            },
+            "description": transaction_data.get("description", ""),
+            "from": transaction_data.get("from", ""),
+            "to": transaction_data.get("to", "")
+        }
+        transactions.append(transaction)
+
+    return transactions

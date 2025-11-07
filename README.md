@@ -58,7 +58,19 @@ This project contains several properly-working modules with utility functions:
 
 ### `decorators.py`
 
-- **`log`** – decorator that logs function calls: timestamp, function name, arguments, result, and exceptions. If a filename is provided, logs are written to that file; otherwise they are printed to the console/
+- **`log`** – decorator that logs function calls, including timestamp, function name, arguments, return value, and any exceptions. If a `filename` is provided, logs are written to that file; otherwise, they are printed to the console. 
+- **`log_exceptions`** – decorator that automatically logs any unhandled exceptions raised within the wrapped function. Exceptions are logged at the ERROR level with the full stack trace using the provided logger, and then re-raised to preserve the original behavior.
+
+### `external_api.py`
+- **`exchange_through_api`** - converts an amount from one currency to another using the ExchangeRates API. Requires an API key specified in the `.env` file.
+- **`convert_to_rub`** - converts the `amount` field in a transaction to Russian Rubles (RUB). If the amount is already in RUB, it is returned unchanged; otherwise, the function uses `exchange_through_api` for conversion.
+
+### `import_transactions.py`
+- **`import_transactions_csv_excel_json`** - imports transactions from `.csv`, `.xlsx`, or `.json` files and converts them to a standardized list of dictionaries. Requires proper configuration in `config.py`, including column definitions and autofill settings.
+
+### `utils.py`
+- **`get_transactions_from_json`** - loads a list of transactions from a JSON file and performs basic validation.
+
 ## Usage Examples
 
 You can run these functions by calling them in Python with some input data and optionally printing the results.
