@@ -82,9 +82,7 @@ fabric.properties
 # testing and debugging
 src/app.log
 src/debug_and_test.py
-data/operations.json
+data
+logs
 
 .env
-
-logs
-data
