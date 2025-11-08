@@ -132,3 +132,18 @@ def transactions_fully_correct_data() -> list[dict[str, Any]]:
 def transactions_data_not_a_list():
     """Некорректные данные — словарь вместо списка."""
     return {"id": 1, "amount": 100}
+
+
+@pytest.fixture(autouse=True)
+def mock_dependencies(monkeypatch):
+    """Общая подмена зависимостей, чтобы тест не зависел от других функций."""
+    # Заглушка mask_account_card
+    monkeypatch.setattr("src.menu_functions.mask_account_card", lambda x: f"masked({x})")
+
+    # Заглушка get_date, имитирует успешное и ошибочное преобразование
+    def fake_get_date(date_str):
+        if not date_str:
+            raise ValueError("Некорректная дата")
+        return "01.01.2025"
+
+    monkeypatch.setattr("src.menu_functions.get_date", fake_get_date)

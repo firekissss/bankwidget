@@ -60,6 +60,31 @@ def sort_by_date(dictionary_input_list: list[dict], is_reversed: bool = True) ->
 
 
 def search_in_descriptions(data: list[dict], search: str) -> list[dict]:
+    """
+        Filter a list of transaction dictionaries by a search pattern in the 'description' field.
+
+        Parameters
+        ----------
+        data : list[dict]
+            A list of transaction dictionaries. Each dictionary may contain a 'description' key.
+        search : str
+            The regex pattern to search for within the transaction descriptions. Case-insensitive.
+
+        Returns
+        -------
+        list[dict]
+            A list of dictionaries from `data` where the 'description' matches the `search` pattern.
+
+        Raises
+        ------
+        ValueError
+            If `data` is not a list or contains non-dictionary elements.
+
+        Notes
+        -----
+        - Matching is performed with `re.search` and is case-insensitive.
+        - Transactions without a 'description' field are ignored.
+    """
     if not isinstance(data, list):
         raise ValueError(f"Параметр data должен быть списком, получено: {type(data).__name__}")
     output: list[dict] = []
@@ -73,6 +98,33 @@ def search_in_descriptions(data: list[dict], search: str) -> list[dict]:
 
 
 def count_transactions_in_categories(data: list[dict], categories: list) -> dict[str, int]:
+    """
+        Count the number of transactions whose descriptions match given categories.
+
+        Parameters
+        ----------
+        data : list[dict]
+            A list of transaction dictionaries. Each dictionary may contain a 'description' key.
+        categories : list
+            A list of regex patterns (strings) representing categories to search for in descriptions.
+
+        Returns
+        -------
+        dict[str, int]
+            A dictionary where each key is a category from `categories` and the value is the number of
+            transactions whose 'description' matches that category (case-insensitive).
+
+        Raises
+        ------
+        ValueError
+            If `data` or `categories` is not a list, or if `data` contains non-dictionary elements.
+
+        Notes
+        -----
+        - Matching is performed with `re.search` and is case-insensitive.
+        - Transactions without a 'description' field are ignored.
+        - A single transaction can match multiple categories and will be counted in each matching category.
+    """
     if not isinstance(data, list):
         raise ValueError(f"Параметр data должен быть списком, получено: {type(data).__name__}")
     if not isinstance(categories, list):
@@ -87,3 +139,5 @@ def count_transactions_in_categories(data: list[dict], categories: list) -> dict
             if re.search(category, description, re.IGNORECASE):
                 output_count[category] += 1
     return output_count
+
+count_transactions_in_categories()
