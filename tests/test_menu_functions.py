@@ -1,8 +1,24 @@
 from unittest.mock import patch
 
 import pytest
-from src.menu_functions import *
-from tests.conftest import transactions_fully_correct_data
+
+from src.menu_functions import (
+    choose_file,
+    exc_msg_dialog,
+    filter_by_state_dialog,
+    filter_currency_dialog,
+    filter_description_dialog,
+    filter_dialog,
+    formatted_transaction_output,
+    handle_cached_import,
+    is_transaction_empty,
+    load_cache,
+    load_transactions,
+    print_transactions,
+    remove_empty_transactions,
+    save_cache,
+    sort_transactions_dialog,
+)
 
 
 # testing save_cache and load_cache
@@ -174,7 +190,8 @@ def test_filter_by_state_dialog(monkeypatch, capsys, user_inputs, mock_behavior,
     if isinstance(mock_behavior["filter_by_state"], Exception):
         def fake_filter_by_state(*_):
             raise mock_behavior["filter_by_state"]
-    elif isinstance(mock_behavior["filter_by_state"], type) and issubclass(mock_behavior["filter_by_state"], Exception):
+    elif (isinstance(mock_behavior["filter_by_state"], type)
+          and issubclass(mock_behavior["filter_by_state"], Exception)):
         def fake_filter_by_state(*_):
             raise mock_behavior["filter_by_state"]("Ошибка фильтрации")
     elif mock_behavior["filter_by_state"] is None:
@@ -298,7 +315,6 @@ def test_filter_currency_dialog(monkeypatch, capsys, inputs, convert_raises, exp
 
     # запуск
     result = filter_currency_dialog(transactions)
-    output = capsys.readouterr().out
 
     # проверки
     if expected_func == "convert_to_rub":
@@ -441,11 +457,13 @@ def test_choose_file_cancel(monkeypatch):
     result = choose_file()
     assert result is None
 
+
 def test_choose_file_valid_path(monkeypatch):
     # сценарий, когда пользователь вводит путь к файлу
     monkeypatch.setattr("builtins.input", lambda _: "/path/to/file.csv")
     result = choose_file()
     assert result == "/path/to/file.csv"
+
 
 # testing load_transactions
 
@@ -480,6 +498,7 @@ def test_load_transactions_exception(monkeypatch):
     assert result is None
     assert called["exc_called"] is True
 
+
 # testing handle_cached_import
 
 def test_handle_cached_import_no_cache(monkeypatch):
@@ -488,12 +507,14 @@ def test_handle_cached_import_no_cache(monkeypatch):
     result = handle_cached_import()
     assert result is None
 
+
 def test_handle_cached_import_choice_1(monkeypatch):
     fake_cache = {"source": "dummy.csv", "transactions": [{"id": 1}]}
     monkeypatch.setattr("src.menu_functions.load_cache", lambda: fake_cache)
     monkeypatch.setattr("builtins.input", lambda _: '1')
     result = handle_cached_import()
     assert result == fake_cache['transactions']
+
 
 def test_handle_cached_import_choice_2(monkeypatch):
     fake_cache = {"source": "dummy.csv", "transactions": [{"id": 1}]}
@@ -503,12 +524,14 @@ def test_handle_cached_import_choice_2(monkeypatch):
     result = handle_cached_import()
     assert result == [{"id": 2}]
 
+
 def test_handle_cached_import_choice_other(monkeypatch):
     fake_cache = {"source": "dummy.csv", "transactions": [{"id": 1}]}
     monkeypatch.setattr("src.menu_functions.load_cache", lambda: fake_cache)
     monkeypatch.setattr("builtins.input", lambda _: '0')
     result = handle_cached_import()
     assert result is None
+
 
 # testing filter_dialog
 
@@ -518,6 +541,7 @@ def test_filter_dialog_empty_transactions(monkeypatch):
     monkeypatch.setattr("builtins.print", lambda *a, **kw: None)
     filter_dialog([])
     # просто проверяем, что функция не падает
+
 
 def test_filter_dialog_all_filters(monkeypatch, transactions_fully_correct_data):
     # Мокаем все внутренние функции, чтобы они просто возвращали список или делали ничего
@@ -532,6 +556,7 @@ def test_filter_dialog_all_filters(monkeypatch, transactions_fully_correct_data)
     # Проверяем, что функция отрабатывает без ошибок
     filter_dialog(transactions_fully_correct_data)
 
+
 def test_filter_dialog_filter_by_state_none(monkeypatch, transactions_fully_correct_data):
     # Сценарий, когда фильтрация по состоянию возвращает None
     monkeypatch.setattr("src.menu_functions.remove_empty_transactions", lambda t: t)
@@ -544,6 +569,7 @@ def test_filter_dialog_filter_by_state_none(monkeypatch, transactions_fully_corr
 
     filter_dialog(transactions_fully_correct_data)
 
+
 def test_filter_dialog_filter_currency_empty(monkeypatch, transactions_fully_correct_data):
     # Сценарий, когда фильтр валют возвращает пустой список
     monkeypatch.setattr("src.menu_functions.remove_empty_transactions", lambda t: t)
@@ -555,6 +581,7 @@ def test_filter_dialog_filter_currency_empty(monkeypatch, transactions_fully_cor
     monkeypatch.setattr("builtins.print", lambda *a, **kw: None)
 
     filter_dialog(transactions_fully_correct_data)
+
 
 def test_filter_dialog_filter_description_empty(monkeypatch, transactions_fully_correct_data):
     # Сценарий, когда фильтр описания возвращает пустой список

@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Any
 
+
 # bank account length range
 MIN_ACC_NUMBER_LENGTH = 4
 MAX_ACC_NUMBER_LENGTH = 34

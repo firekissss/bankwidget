@@ -134,10 +134,9 @@ def count_transactions_in_categories(data: list[dict], categories: list) -> dict
         if not isinstance(item, dict):
             raise ValueError(f"Список должен содержать словари, но содержит элементы типа {type(item).__name__}")
         description = item.get("description", None)
-        if description is None: continue
+        if description is None:
+            continue
         for category in categories:
             if re.search(category, description, re.IGNORECASE):
                 output_count[category] += 1
     return output_count
-
-count_transactions_in_categories()

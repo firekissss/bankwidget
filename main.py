@@ -1,4 +1,5 @@
-from src.menu_functions import choose_file, load_transactions, handle_cached_import, filter_dialog
+from src.menu_functions import choose_file, filter_dialog, handle_cached_import, load_transactions
+
 
 def main():
     """main function"""
@@ -28,6 +29,7 @@ def main():
 
         else:
             print("\nТакого пункта меню нет. Попробуйте ещё раз.")
+
 
 if __name__ == '__main__':
     main()

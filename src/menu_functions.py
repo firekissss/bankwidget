@@ -5,7 +5,7 @@ from src.config import CACHE_FILE
 from src.external_api import convert_to_rub
 from src.generators import filter_by_currency
 from src.import_transactions import import_transactions_csv_excel_json
-from src.processing import filter_by_state, sort_by_date, search_in_descriptions
+from src.processing import filter_by_state, search_in_descriptions, sort_by_date
 from src.widget import get_date, mask_account_card
 
 

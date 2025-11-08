@@ -1,11 +1,14 @@
-from collections import defaultdict
 from typing import Any, Optional
 
 import pytest
 
-from src.processing import datetime, filter_by_state, sort_by_date, search_in_descriptions, \
-    count_transactions_in_categories
-from tests.conftest import transactions_fully_correct_data
+from src.processing import (
+    count_transactions_in_categories,
+    datetime,
+    filter_by_state,
+    search_in_descriptions,
+    sort_by_date,
+)
 
 
 # testing filter_by_state
