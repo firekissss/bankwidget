@@ -1,6 +1,6 @@
 # values and ranges that are supported in the project.
+from pathlib import Path
 from typing import Any
-
 
 # bank account length range
 MIN_ACC_NUMBER_LENGTH = 4
@@ -19,11 +19,14 @@ KNOWN_CARD_PREFIXES = [
     "visa classic",
     "visa platinum",
     "visa gold",
-    "mir"
+    "mir",
+    "мир",
+    "discover",
+    "american express"
 ]
 
 # states of operations
-SUPPORTED_STATES = ["EXECUTED", "CANCELED"]
+SUPPORTED_STATES = ["EXECUTED", "CANCELED", "PENDING"]
 
 # Обязательные колонки в содержимом импортируемого файла и типы данных в них.
 # Если не требуется проверка типа, указать Any.
@@ -37,9 +40,9 @@ REQUIRED_DATA_IN_TRANSACTIONS = {
     "amount": (float, 1),
     "currency_name": (str, 1),
     "currency_code": (str, 1),
-    "from": (Any, 1),
-    "to": (Any, 1),
-    "description": (Any, 0),
+    "from": (Any, 0),
+    "to": (Any, 0),
+    "description": (str, 0),
 }
 
 # поведение при отсутствии значения в колонке импортируемого файла:
@@ -49,3 +52,6 @@ REQUIRED_DATA_IN_TRANSACTIONS = {
 AUTOADD_MISSING_VALUES = 2
 # Использовать безопасное автозаполнение (2), если при дальнейшем обращении к итоговому списку словарей
 # требуется чёткое указание на отсутствие значения, а не нулевое значение или пустая строка.
+
+
+CACHE_FILE = Path(__file__).resolve().parent.parent / "data" / "cache.json"
