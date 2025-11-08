@@ -14,10 +14,6 @@ dependencies = [
     "pandas (>=2.3.3,<3.0.0)"
 ]
 
-[tool.poetry]
-package-mode = false
-
-
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
@@ -58,3 +54,6 @@ combine_as_imports = true
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
+
+[tool.poetry.scripts]
+bankwidget = "bankwidget.main:main"

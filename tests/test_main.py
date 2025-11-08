@@ -2,7 +2,7 @@ import builtins
 
 import pytest
 
-from main import main
+from bankwidget.main import main
 
 
 @pytest.fixture
