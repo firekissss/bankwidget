@@ -1,5 +1,6 @@
 import re
-from datetime import datetime
+
+from dateutil import parser
 
 from src import masks
 from src.config import KNOWN_CARD_PREFIXES
@@ -39,11 +40,8 @@ def mask_account_card(card_info: str) -> str:
 
 def get_date(input_date_string: str) -> str:
     """extracts date in DD.MM.YYYY format from ISO datetime string"""
-    pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+$"
-    if not re.fullmatch(pattern, input_date_string):
-        raise ValueError("Некорректный формат")
     try:
-        date_parsed = datetime.fromisoformat(input_date_string)
-    except ValueError:
-        raise ValueError("Некорректная дата/время")
+        date_parsed = parser.isoparse(input_date_string)
+    except Exception:
+        raise ValueError(f"Некорректная дата/время: {input_date_string}")
     return date_parsed.strftime("%d.%m.%Y")
