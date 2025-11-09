@@ -8,10 +8,10 @@ from bankwidget.main import main
 @pytest.fixture
 def mock_menu_functions(monkeypatch):
     # Мокаем все функции, чтобы не было реального I/O и работы с пользователем
-    monkeypatch.setattr("main.choose_file", lambda: "dummy.csv")
-    monkeypatch.setattr("main.load_transactions", lambda fp: [{"id": 1}])
-    monkeypatch.setattr("main.handle_cached_import", lambda: [{"id": 2}])
-    monkeypatch.setattr("main.filter_dialog", lambda t: None)
+    monkeypatch.setattr("bankwidget.main.choose_file", lambda: "dummy.csv")
+    monkeypatch.setattr("bankwidget.main.load_transactions", lambda fp: [{"id": 1}])
+    monkeypatch.setattr("bankwidget.main.handle_cached_import", lambda: [{"id": 2}])
+    monkeypatch.setattr("bankwidget.main.filter_dialog", lambda t: None)
     monkeypatch.setattr("builtins.print", lambda *a, **kw: None)
 
 
