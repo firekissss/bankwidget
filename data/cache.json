@@ -1,0 +1,13 @@
+{
+    "source": "test_file.csv",
+    "transactions": [
+        {
+            "id": 1,
+            "amount": 100
+        },
+        {
+            "id": 2,
+            "amount": 200
+        }
+    ]
+}
