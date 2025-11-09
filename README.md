@@ -27,13 +27,36 @@ No frontend yet, but going to do that soon.
 
 ## Getting started
 
-Install this project from git:
+There are two ways to install and run this project, depending on whether you are using Poetry or plain Python.
+
+### Option 1. Using Poetry (recommended)
+
+If you already have Poetry installed, you can clone and run the project like this:
 
 ```commandline
-gh repo clone firekissss/bankwidget
+git clone https://github.com/firekissss/bankwidget
+cd bankwidget
+poetry install
+poetry run bankwidget
 ```
 
-Do not launch it in any possible way! There's nothing to launch yet!
+This method automatically creates a virtual environment, installs all dependencies, and launches the program using the command poetry run bankwidget.
+
+### Option 2. Using regular Python
+
+If you prefer to use Python without Poetry, follow these steps:
+
+```commandline
+git clone https://github.com/firekissss/bankwidget
+cd bankwidget
+python -m venv .venv
+source .venv/bin/activate     # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
+python main.py
+```
+
+This way, the project runs directly through Python without requiring Poetry.
+
 
 # Modules Overview
 
@@ -50,6 +73,8 @@ This project contains several properly-working modules with utility functions:
 ### `processing.py`
 - **`filter_by_state`** – filters a list of dictionaries by the `'state'` key (defaults to `'EXECUTED'`).
 - **`sort_by_date`** – sorts a list of dictionaries by the `'date'` key (ISO format), in descending order by default (ascending optional).
+- **`search_in_descriptions`** – searches all transactions where the description contains the specified substring, case-insensitive. Suitable for quick search by keywords, categories, or parts of phrases. If an element in the list is not a dictionary, a `ValueError` is raised.
+- **`count_transactions_in_categories`** – counts how many transactions contain the given category words in their descriptions. Returns a dictionary of the form `{category: count}`. Useful for analyzing spending distribution by expense type.
 
 ### `generators.py`
 - **`filter_by_currency`** – returns an iterator of transactions that match the specified currency.
@@ -62,14 +87,14 @@ This project contains several properly-working modules with utility functions:
 - **`log_exceptions`** – decorator that automatically logs any unhandled exceptions raised within the wrapped function. Exceptions are logged at the ERROR level with the full stack trace using the provided logger, and then re-raised to preserve the original behavior.
 
 ### `external_api.py`
-- **`exchange_through_api`** - converts an amount from one currency to another using the ExchangeRates API. Requires an API key specified in the `.env` file.
-- **`convert_to_rub`** - converts the `amount` field in a transaction to Russian Rubles (RUB). If the amount is already in RUB, it is returned unchanged; otherwise, the function uses `exchange_through_api` for conversion.
+- **`exchange_through_api`** – converts an amount from one currency to another using the ExchangeRates API. Requires an API key specified in the `.env` file.
+- **`convert_to_rub`** – converts the `amount` field in a transaction to Russian Rubles (RUB). If the amount is already in RUB, it is returned unchanged; otherwise, the function uses `exchange_through_api` for conversion.
 
 ### `import_transactions.py`
-- **`import_transactions_csv_excel_json`** - imports transactions from `.csv`, `.xlsx`, or `.json` files and converts them to a standardized list of dictionaries. Requires proper configuration in `config.py`, including column definitions and autofill settings.
+- **`import_transactions_csv_excel_json`** – imports transactions from `.csv`, `.xlsx`, or `.json` files and converts them to a standardized list of dictionaries. Requires proper configuration in `config.py`, including column definitions and autofill settings.
 
 ### `utils.py`
-- **`get_transactions_from_json`** - loads a list of transactions from a JSON file and performs basic validation.
+- **`get_transactions_from_json`** – loads a list of transactions from a JSON file and performs basic validation.
 
 ## Usage Examples
 
@@ -161,6 +186,40 @@ try:
 except ZeroDivisionError:
     pass
 ```
+---
+### `search_in_descriptions`
+```python
+from src.processing import search_in_descriptions
+data = [
+{"description": "Spotify Premium payment", "amount": 299},
+{"description": "Transfer to Ivan", "amount": 500},
+{"description": "Grocery shopping at Magnit", "amount": 1200}
+]
+
+results = search_in_descriptions(data, "payment")
+print(results)
+# Output:
+[{"description": "Spotify Premium payment", "amount": 299}]
+```
+---
+### `count_transactions_in_categories`
+```python
+from src.processing import count_transactions_in_categories
+data = [
+{"description": "Grocery shopping"},
+{"description": "Phone payment"},
+{"description": "Transfer to a friend"},
+{"description": "Spotify Premium payment"},
+{"description": "Grocery"}
+]
+
+categories = ["payment", "grocery", "transfer"]
+
+result = count_transactions_in_categories(data, categories)
+print(result)
+# Output:
+{"payment": 2, "grocery": 2, "transfer": 1}
+```
 
 ## Development
 
@@ -233,6 +292,10 @@ pytest -v
     - Correct and incorrect operation data
     - Duplicate and identical data scenarios
 
+To run all tests, enter this command:
+```commandline
+pytest
+```
 You can also run specific test files or functions using:
 
 ```bash
